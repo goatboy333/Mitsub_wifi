@@ -1,15 +1,18 @@
 
 const int buttonPin = 7;
-int ledPin = 10;
-unsigned long signal = 0b000011010101111100101010; // "ON" code for NEC protocol
-int bitTiming = 500; // length of bit 562 microsecond for NEC Protocol
+int irPin = 10;  // Pin on arduino to connect IR transmitter.
+// unsigned long signal = 0b000011010101111100101010; // "ON" code for NEC protocol
+long signal [5]= {0b00111011001011001001101101111111,0b11111111111111111110111111001111,
+0b11111100110011011111111111111111,0b11111111111111111111111111111111,0b1111111101010011};
+
+int bitTiming = 435; // length of bit 562 microsecond for NEC Protocol
 
 int buttonState = 0;       // current state of the button
 int lastButtonState = 0;
 
 void setup() {
-  pinMode(ledPin, OUTPUT); 
-  digitalWrite(ledPin, LOW);
+  pinMode(irPin, OUTPUT); 
+  digitalWrite(irPin, LOW);
   pinMode(buttonPin, INPUT);
   Serial.begin(9600);
 }
@@ -27,9 +30,9 @@ void sendPulses(int msPulses) {
  */
 
   for (int p = 0; p < (msPulses / 26); p++) {
-  digitalWrite(ledPin,HIGH);
+  digitalWrite(irPin,HIGH);
   delayMicroseconds(9);
-  digitalWrite(ledPin,LOW);
+  digitalWrite(irPin,LOW);
   delayMicroseconds(9);
   }
 
@@ -38,7 +41,52 @@ void sendPulses(int msPulses) {
 
 void sendBits() {
 
-  for (int i = 23; i > -1; i--){
+  for (int i = 0; i < 4; i++){
+    for (int j = 31; j > -1; j--){
+    
+      Serial.print(getBit(signal[1,i],j));
+    
+      if (getBit(signal,i) == 1){
+       sendPulses(bitTiming); // just used as a reference in serial to see if bits match the signal.
+        delayMicroseconds(bitTiming); 
+      }
+   
+      else {
+        sendPulses(bitTiming);
+        delayMicroseconds(bitTiming * 3);
+      }
+     
+    }
+  } 
+
+  for (int j = 15; j > -1; j--){
+    
+      Serial.print(getBit(signal[1,4],j));
+    
+      if (getBit(signal,j) == 1){
+       sendPulses(bitTiming); // just used as a reference in serial to see if bits match the signal.
+        delayMicroseconds(bitTiming * 2); 
+      }
+   
+      else {
+        sendPulses(bitTiming);
+        delayMicroseconds(bitTiming * 4);
+      }
+     
+    }
+
+
+
+  
+}
+
+
+
+
+/*
+void sendBits() {
+
+  for (int i = 31; i > -1; i--){
     
     Serial.print(getBit(signal,i));
     
@@ -56,19 +104,21 @@ void sendBits() {
    
 }
 
+*/
+
 void buttonCheck(){
   // read the state of the pushbutton value:
   buttonState = digitalRead(buttonPin);
 
   if (buttonState != lastButtonState) {
   if (buttonState == HIGH) {
-    sendPulses(4000);  // send header
-    delayMicroseconds(4000); // send header space
+    sendPulses(3500);  // send header
+    delayMicroseconds(1700); // send header space
     sendBits();   // send bits
     sendPulses(bitTiming); // send one pulse to signify end of tranmission
-    delay(8); // extra debounce for button
-    sendPulses(4000);  // send header
-    delayMicroseconds(4000); // send header space
+    delay(1550); // extra debounce for button
+    sendPulses(3500);  // send header
+    delayMicroseconds(1700); // send header space
     sendBits();   // send bits
     sendPulses(bitTiming); // send one pulse to signify end of tranmission
     
