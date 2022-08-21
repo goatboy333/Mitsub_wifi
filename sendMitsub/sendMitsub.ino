@@ -2,8 +2,11 @@
 const int buttonPin = 7;
 int irPin = 10;  // Pin on arduino to connect IR transmitter.
 // unsigned long signal = 0b000011010101111100101010; // "ON" code for NEC protocol
-long signal [5]= {0b00111011001011001001101101111111,0b11111111111111111110111111001111,
-0b11111100110011011111111111111111,0b11111111111111111111111111111111,0b1111111101010011};
+//long signal [5]= {0b00111011001011001001101101111111,0b11111111111111111110111111001111,
+//0b11111100110011011111111111111111,0b11111111111111111111111111111111,0b1111111101010011};
+
+long signal [5]= {0b00111011001011001001101101111111,0b11111111111110111110111101001111,
+0b11111100110011011111111111111111,0b11111111111111111111111111111111,0b1111111110010101};
 
 int bitTiming = 435; // length of bit 562 microsecond for NEC Protocol
 
@@ -46,7 +49,7 @@ void sendBits() {
     
       Serial.print(getBit(signal[1,i],j));
     
-      if (getBit(signal,i) == 1){
+      if (getBit(signal[1,i],j) == 1){
        sendPulses(bitTiming); // just used as a reference in serial to see if bits match the signal.
         delayMicroseconds(bitTiming); 
       }
@@ -63,14 +66,14 @@ void sendBits() {
     
       Serial.print(getBit(signal[1,4],j));
     
-      if (getBit(signal,j) == 1){
+      if (getBit(signal[1,4],j) == 1){
        sendPulses(bitTiming); // just used as a reference in serial to see if bits match the signal.
-        delayMicroseconds(bitTiming * 2); 
+        delayMicroseconds(bitTiming); 
       }
    
       else {
         sendPulses(bitTiming);
-        delayMicroseconds(bitTiming * 4);
+        delayMicroseconds(bitTiming * 3);
       }
      
     }
@@ -102,9 +105,9 @@ void sendBits() {
      
     }
    
-}
+} */
 
-*/
+
 
 void buttonCheck(){
   // read the state of the pushbutton value:
@@ -112,11 +115,11 @@ void buttonCheck(){
 
   if (buttonState != lastButtonState) {
   if (buttonState == HIGH) {
-    sendPulses(3500);  // send header
+    sendPulses(3450);  // send header
     delayMicroseconds(1700); // send header space
     sendBits();   // send bits
     sendPulses(bitTiming); // send one pulse to signify end of tranmission
-    delay(1550); // extra debounce for button
+    delay(15.5); // extra debounce for button
     sendPulses(3500);  // send header
     delayMicroseconds(1700); // send header space
     sendBits();   // send bits
