@@ -1,6 +1,6 @@
 
-const int buttonPin = 7;
-int irPin = 10;  // Pin on arduino to connect IR transmitter.
+const int buttonPin = D1; // temp push button
+int irPin = D2;  // Pin esp3288 D1 mini.
 // unsigned long signal = 0b000011010101111100101010; // "ON" code for NEC protocol
 //long signal [5]= {0b00111011001011001001101101111111,0b11111111111111111110111111001111,
 //0b11111100110011011111111111111111,0b11111111111111111111111111111111,0b1111111101010011};
