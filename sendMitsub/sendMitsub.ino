@@ -1,14 +1,11 @@
 
 const int buttonPin = D1; // temp push button
 int irPin = D2;  // Pin esp3288 D1 mini.
-// unsigned long signal = 0b000011010101111100101010; // "ON" code for NEC protocol
-//long signal [5]= {0b00111011001011001001101101111111,0b11111111111111111110111111001111,
-//0b11111100110011011111111111111111,0b11111111111111111111111111111111,0b1111111101010011};
 
 long signal [5]= {0b00111011001011001001101101111111,0b11111111111110111110111101001111,
 0b11111100110011011111111111111111,0b11111111111111111111111111111111,0b1111111110010101};
 
-int bitTiming = 435; // length of bit 562 microsecond for NEC Protocol
+int bitTiming = 435; // length of bit 435 microsecond for mitsubishi G-inverter Protocol
 
 int buttonState = 0;       // current state of the button
 int lastButtonState = 0;
@@ -47,66 +44,35 @@ void sendBits() {
   for (int i = 0; i < 4; i++){
     for (int j = 31; j > -1; j--){
     
-      Serial.print(getBit(signal[1,i],j));
+      Serial.print(getBit(signal[1,i],j));  // just used as a reference in serial to see if bits match the signal.
     
       if (getBit(signal[1,i],j) == 1){
-       sendPulses(bitTiming); // just used as a reference in serial to see if bits match the signal.
+       sendPulses(bitTiming); 
         delayMicroseconds(bitTiming); 
       }
    
       else {
         sendPulses(bitTiming);
         delayMicroseconds(bitTiming * 3);
-      }
-     
+      }    
     }
   } 
 
   for (int j = 15; j > -1; j--){
     
-      Serial.print(getBit(signal[1,4],j));
+      Serial.print(getBit(signal[1,4],j)); // just used as a reference in serial to see if bits match the signal.
     
       if (getBit(signal[1,4],j) == 1){
-       sendPulses(bitTiming); // just used as a reference in serial to see if bits match the signal.
+       sendPulses(bitTiming); 
         delayMicroseconds(bitTiming); 
       }
    
       else {
         sendPulses(bitTiming);
         delayMicroseconds(bitTiming * 3);
-      }
-     
-    }
-
-
-
-  
+      }     
+    }  
 }
-
-
-
-
-/*
-void sendBits() {
-
-  for (int i = 31; i > -1; i--){
-    
-    Serial.print(getBit(signal,i));
-    
-    if (getBit(signal,i) == 1){
-      sendPulses(bitTiming); // just used as a reference in serial to see if bits match the signal.
-      delayMicroseconds(bitTiming * 2); 
-      }
-   
-    else {
-      sendPulses(bitTiming);
-      delayMicroseconds(bitTiming * 4);
-      }
-     
-    }
-   
-} */
-
 
 
 void buttonCheck(){
@@ -119,7 +85,7 @@ void buttonCheck(){
     delayMicroseconds(1700); // send header space
     sendBits();   // send bits
     sendPulses(bitTiming); // send one pulse to signify end of tranmission
-    delay(15.5); // extra debounce for button
+    delay(15.5); // delay low between repeats
     sendPulses(3500);  // send header
     delayMicroseconds(1700); // send header space
     sendBits();   // send bits
@@ -129,7 +95,7 @@ void buttonCheck(){
     
   else {
     
-  }
+    }
   }
  
   lastButtonState = buttonState;
